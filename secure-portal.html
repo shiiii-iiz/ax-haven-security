@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ax Haven | Restricted Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #800000;
+            --primary-dark: #580000;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+            --error: #d32f2f;
+            --warning: #d68910;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(88, 0, 0, 0.85), rgba(30, 0, 0, 0.95)),
+                url('https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: var(--glass);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s ease;
+        }
+
+        .icon-container {
+            width: 90px;
+            height: 90px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            margin: -85px auto 20px;
+            border: 5px solid var(--white);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+            transition: background 0.3s;
+        }
+
+        .icon-container.locked {
+            background: #444;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            transition: color 0.3s;
+        }
+
+        .input-group #togglePassword {
+            left: auto;
+            right: 15px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+            background: #f9f9f9;
+        }
+
+        #passphrase {
+            padding-right: 45px;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 5px 15px rgba(128, 0, 0, 0.1);
+        }
+
+        .btn-secure {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(128, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-secure:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(128, 0, 0, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 15px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .attempt-warning {
+            color: var(--warning);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: none;
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .locked-mode input {
+            background-color: #eee;
+            color: #999;
+            pointer-events: none;
+            border-color: #ccc;
+        }
+
+        .locked-mode .btn-secure {
+            background: #777;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        .locked-mode .icon-container {
+            background-color: #333;
+        }
+
+        .locked-mode #togglePassword {
+            pointer-events: none;
+            color: #999;
+        }
+
+        .countdown-timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--error);
+            margin-top: 10px;
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .shake-anim {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card" id="mainCard">
+        <div class="icon-container" id="adminIcon">
+            <i class="fas fa-user-shield" id="iconSymbol"></i>
+        </div>
+
+        <div id="step-1">
+            <h2 id="headerTitle">Staff Portal</h2>
+            <p class="subtitle" id="headerSub">AX Haven Secure Login</p>
+
+            <p class="attempt-warning" id="attemptWarning">⚠️ Warning: 2 attempts remaining</p>
+            <div class="countdown-timer" id="timerDisplay">Try again in 60s</div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-id-badge"></i>
+                    <input type="text" id="badgeId" placeholder="Badge ID" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="passphrase" placeholder="Secure Passphrase">
+                    <i class="fas fa-eye" id="togglePassword"></i>
+                </div>
+
+                <button type="submit" class="btn-secure" id="loginBtn">Authenticate</button>
+                <p class="error-msg" id="loginError"><i class="fas fa-exclamation-circle"></i> Access Denied.</p>
+            </form>
+        </div>
+
+        <div id="step-2" class="hidden">
+            <h2>Two-Factor Auth</h2>
+            <p class="subtitle">Enter the 6-digit code sent to device **88.</p>
+
+            <form id="twoFactorForm">
+                <div class="input-group" style="text-align:center;">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input type="text" id="authCode" placeholder="000 000" maxlength="6"
+                        style="text-align:center; letter-spacing: 5px; font-weight: bold; font-size: 1.1rem;">
+                </div>
+
+                <button type="submit" class="btn-secure">Verify Session</button>
+                <p class="error-msg" id="otpError"><i class="fas fa-times-circle"></i> Incorrect Code.</p>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuRohKXCTjh5QPbeG7ojWlLBC6U9pIa0g",
+            authDomain: "axhaven.firebaseapp.com",
+            projectId: "axhaven",
+            storageBucket: "axhaven.firebasestorage.app",
+            messagingSenderId: "875314098444",
+            appId: "1:875314098444:web:1ccbb2ab4e1cddaeaa5929"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const OTP_CODE = "210981";
+        const MAX_ATTEMPTS = 3;
+        const LOCKOUT_DURATION = 60000; // 30 seconds
+
+        const loginForm = document.getElementById('loginForm');
+        const twoFactorForm = document.getElementById('twoFactorForm');
+        const card = document.getElementById('mainCard');
+        const adminIcon = document.getElementById('adminIcon');
+        const iconSymbol = document.getElementById('iconSymbol');
+        const errorMsg = document.getElementById('loginError');
+        const warningMsg = document.getElementById('attemptWarning');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passphrase');
+
+        togglePassword.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        setInterval(checkLockoutStatus, 1000);
+        checkLockoutStatus();
+
+        function checkLockoutStatus() {
+            const lockUntil = parseInt(localStorage.getItem('lockoutTimestamp')) || 0;
+            const now = new Date().getTime();
+
+            if (now < lockUntil) {
+                const remaining = lockUntil - now;
+                enableLockoutMode(remaining);
+            } else {
+                if (card.classList.contains('locked-mode')) {
+                    disableLockoutMode();
+                }
+            }
+        }
+
+        function enableLockoutMode(remainingTimeMs) {
+            if (!card.classList.contains('locked-mode')) {
+                card.classList.add('locked-mode');
+                adminIcon.classList.add('locked');
+                iconSymbol.className = "fas fa-ban";
+                document.getElementById('headerTitle').innerText = "System Locked";
+                document.getElementById('headerSub').innerText = "Too many failed attempts.";
+                loginForm.style.opacity = "0.5";
+                warningMsg.style.display = "none";
+                errorMsg.style.display = "none";
+                timerDisplay.style.display = "block";
+            }
+            timerDisplay.innerText = `Try again in ${Math.ceil(remainingTimeMs / 1000)}s`;
+        }
+
+        function disableLockoutMode() {
+            card.classList.remove('locked-mode');
+            adminIcon.classList.remove('locked');
+            iconSymbol.className = "fas fa-user-shield";
+            document.getElementById('headerTitle').innerText = "Staff Portal";
+            document.getElementById('headerSub').innerText = "AX Haven Secure Login";
+            loginForm.style.opacity = "1";
+            timerDisplay.style.display = "none";
+            localStorage.setItem('loginAttempts', 0);
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (card.classList.contains('locked-mode')) return;
+
+            const idInput = document.getElementById('badgeId').value;
+            const passInput = document.getElementById('passphrase').value;
+            const btn = loginForm.querySelector('button');
+
+            const originalText = btn.innerText;
+            btn.innerText = "Verifying...";
+            btn.style.opacity = "0.8";
+
+            const fakeEmail = `${idInput}@axhaven.com`;
+
+            signInWithEmailAndPassword(auth, fakeEmail, passInput)
+                .then((userCredential) => {
+                    btn.innerText = "Success";
+                    localStorage.setItem('loginAttempts', 0);
+                    localStorage.setItem('lockoutTimestamp', 0);
+
+                    setTimeout(() => {
+                        step1.classList.add('hidden');
+                        step2.classList.remove('hidden');
+                        step2.classList.add('fade-in');
+                    }, 500);
+                })
+                .catch((error) => {
+                    btn.innerText = originalText;
+                    btn.style.opacity = "1";
+                    console.error("Firebase Error:", error.code);
+                    handleFailure();
+                });
+        });
+
+        function handleFailure() {
+            let currentAttempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
+            currentAttempts++;
+            localStorage.setItem('loginAttempts', currentAttempts);
+
+            card.classList.add('shake-anim');
+            setTimeout(() => card.classList.remove('shake-anim'), 500);
+
+            document.getElementById('passphrase').value = "";
+
+            if (currentAttempts >= MAX_ATTEMPTS) {
+                const lockTime = new Date().getTime() + LOCKOUT_DURATION;
+                localStorage.setItem('lockoutTimestamp', lockTime);
+                checkLockoutStatus();
+            } else {
+                const remaining = MAX_ATTEMPTS - currentAttempts;
+                errorMsg.style.display = 'block';
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Invalid credentials.';
+
+                warningMsg.style.display = 'block';
+                warningMsg.innerText = `⚠️ Warning: ${remaining} attempt(s) remaining`;
+            }
+        }
+
+        twoFactorForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const code = document.getElementById('authCode').value;
+
+            if (code === OTP_CODE) {
+                window.location.href = "admin-dashboard.html";
+            } else {
+                document.getElementById('otpError').style.display = 'block';
+                card.classList.add('shake-anim');
+                setTimeout(() => card.classList.remove('shake-anim'), 500);
+            }
+        });
+    </script>
+</body>
+
+</html>
